@@ -51,7 +51,7 @@ def mk_charcodefile():
         f.write(json.dumps(chars_code_file_dict))
 
 
-# 将char_code_list中的所有编码的变形字的像素值以numpy数组的形式返回
+# 将char_code_list中的所有编码的变形字的像素值以numpy数组的形式返回（原来的）
 def get_old_font_bitmap(char_code_list, width=128, height=128):
     bitmap_list = []
     face = Face('./sysfFS.ttf')
@@ -68,13 +68,17 @@ def get_old_font_bitmap(char_code_list, width=128, height=128):
     return bitmap_list
 
 
+# 将char_code_list中的所有编码的变形字的像素值以numpy数组的形式返回
 def get_font_bitmap(char_code_list, para=0, width=128, height=128):
     bitmap_list = []
     with open('CharsCodeFile.txt', 'r') as f:
         char_code_file_dict = json.loads(f.read())
-    # print(char_code_file_dict)
 
-    dir = ['./AAConvFont_results/simfs_cond_bg_pix2pix/train_latest/fake']
+    dir = ['./AAConvFont_results/simfs_cond_bg_pix2pix/train_latest/fake',
+           './AAConvFont_results/simkai_cond_bg_pix2pix/train_latest/fake',
+           './AAConvFont_results/simyy_cond_bg_pix2pix/train_latest/fake']
+    # para 代表访问文件的位置， 暂时只考虑对page0：7的图片进行处理
+
     for i, c in enumerate(char_code_list):
         file_path = os.path.join(dir[para], char_code_file_dict[c])
         img = cv_imread(file_path)
@@ -83,15 +87,15 @@ def get_font_bitmap(char_code_list, para=0, width=128, height=128):
 
     return bitmap_list
 
-    pass
 
-
-def cv_imread(path):  # 读取含中文字符的图片路径
+# 读取含中文字符的图片路径
+def cv_imread(path):
     img = cv2.imdecode(np.fromfile(path, dtype=np.uint8), -1)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     return img
 
 
+# 原本的匹配算法
 def match_fonting(input_image, hz_bitmap):  # 提取水印信息
     cut_input_image = cut_edge(input_image)  # 黑底白字接包围盒
     resize_image = adj_size(cut_input_image)  # 放大到标准尺寸的3倍 360*300
@@ -123,6 +127,7 @@ def match_fonting(input_image, hz_bitmap):  # 提取水印信息
         return Vectorlist, waterinfo
 
 
+# 切割白边
 def cut_edge(image):  # 黑底白字包围盒图片(只针对黑底白字图像可切边)
     x = image.sum(axis=1)
     y = image.sum(axis=0)

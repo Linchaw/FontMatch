@@ -168,14 +168,11 @@ def match_font(pages_path):
                 except:
                     print(hz)
                 f.write(hz + '-' + str(x) + '-' + str(y) + '-' + str(w) + '-' + str(h) + '-' + watermark + '\n')
-                # print('{0} {1} {2}'.format(hz, pixel_info, watermark))
 
         idx += 1
         watermark_str = ''.join(watermark_info)
         print(len(watermark_str))
         print("文本中提取的所有bit信息为：%s" % watermark_str)
-
-    pass
 
 
 # 主函数
