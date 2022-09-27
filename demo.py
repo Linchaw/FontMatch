@@ -68,7 +68,6 @@ def test1():
     dir = ['./AAConvFont_results/simfs_cond_bg_pix2pix/train_latest/fake']
     filename = os.path.join(dir[0], tmp)
     img = cv2.imread(filename)
-    cv2.namedWindow("cs")  # 创建一个窗口，名称cs
     cv2.imshow("cs", img)  # 在窗口cs中显示图片
     cv2.waitKey(0)
     cv2.destroyAllWindows()

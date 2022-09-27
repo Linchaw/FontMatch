@@ -81,7 +81,10 @@ def get_font_bitmap(char_code_list, para=0, width=128, height=128):
 
     for i, c in enumerate(char_code_list):
         file_path = os.path.join(dir[para], char_code_file_dict[c])
-        img = cv_imread(file_path)
+        img_input = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+        _, img = cv2.threshold(img_input, 0, 255, cv2.THRESH_OTSU)  # 将一幅灰度图二值化 input-one channel
+        _, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV)
+
         hanzi = np.array(img, dtype='ubyte')
         bitmap_list.append(hanzi)
 

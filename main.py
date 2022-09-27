@@ -136,7 +136,7 @@ def split_pages(pages_path):
 # 字体匹配
 def match_font(pages_path):
     idx = 0
-    for page_path in pages_path[0:8]:
+    for page_path in pages_path:
         img_input = cv2.imread(page_path, cv2.IMREAD_GRAYSCALE)
         _, img = cv2.threshold(img_input, 0, 255, cv2.THRESH_OTSU)  # 将一幅灰度图二值化 input-one channel
         _, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV)
@@ -159,15 +159,22 @@ def match_font(pages_path):
                     continue
 
                 hz_img = img[y:y + h, x:x + w]  # 输入图片中截取到的单个汉字
-                hz_bitmaps = chars_match.get_font_bitmap(hz_codes)  # 字符对应的四种标准字形
 
+                if idx <= 7:
+                    para = 0
+                elif idx <= 15:
+                    para = 1
+                elif idx <= 23:
+                    para = 2
+
+                hz_bitmaps = chars_match.get_font_bitmap(hz_codes, para)  # 字符对应的四种标准字形
                 # 字符匹配算法，提取出水印信息01比特串
                 try:
-                    pixel_info, watermark = chars_match.match_fonting(hz_img, hz_bitmaps)
-                    watermark_info.append(watermark)
-                except:
-                    print(hz)
-                f.write(hz + '-' + str(x) + '-' + str(y) + '-' + str(w) + '-' + str(h) + '-' + watermark + '\n')
+                    pixel_info, water_mark = chars_match.match_fonting(hz_img, hz_bitmaps)
+                    watermark_info.append(water_mark)
+                except Exception as E:
+                    print(hz, E)
+                f.write(hz + '-' + str(x) + '-' + str(y) + '-' + str(w) + '-' + str(h) + '-' + water_mark + '\n')
 
         idx += 1
         watermark_str = ''.join(watermark_info)
