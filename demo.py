@@ -3,7 +3,7 @@ import random
 import cv2
 import numpy as np
 import os
-
+import chars_match
 
 # 将FontInfo.txt中char_code的所有变形字体的编码值返回
 def lookup_font_codes(char):
@@ -80,30 +80,40 @@ def test2():
     #     with open(file_name, 'r') as f:
     #         error_dict = json.loads(f.read())
     #     print(error_dict)
-    with open('./result/rate/0-7.json', 'r') as f:
-        error_dict = json.loads(f.read())
-    print(error_dict)
-
-    font_list = np.loadtxt("FontInfo.txt", encoding='gbk', dtype=np.str_, delimiter='|')
-
     with open('CharsCodeFile.txt', 'r') as f:
         code_dict = json.loads(f.read())
     print(code_dict)
 
-    for key, value in error_dict.items():
-        print(key, value)
-        for line in font_list:
-            lst = line.split('-')
-            if lst[0] == key:
-                char_code_list = lst[2:]
-        if '00' in value:
-            open_error(char_code_list[0])
-        if '01' in value:
-            open_error(char_code_list[1])
-        if '10' in value:
-            open_error(char_code_list[2])
-        if '11' in value:
-            open_error(char_code_list[3])
+    all_err = 0
+    for num in range(3):
+        with open('./result/rate/{}-{}.json'.format(num*8, num*8+7), 'r') as f:
+            error_dict = json.loads(f.read())
+        print(error_dict)
+
+        font_list = np.loadtxt("FontInfo.txt", encoding='gbk', dtype=np.str_, delimiter='|')
+
+        for key, value in error_dict.items():
+            # print(key, value)
+            for line in font_list:
+                lst = line.split('-')
+                if lst[0] == key:
+                    hz_codes = lst[2:]
+            hz_bitmaps = chars_match.get_font_bitmap(hz_codes, num)
+            # pixel_info, water_mark = chars_match.match_fonting(hz_img, hz_bitmaps)
+
+            # if '00' in value:
+            #     all_err += 1
+            #     # open_error(char_code_list[0])
+            # if '01' in value:
+            #     all_err += 1
+            #     # open_error(char_code_list[1])
+            # if '10' in value:
+            #     all_err += 1
+            #     # open_error(char_code_list[2])
+            # if '11' in value:
+            #     all_err += 1
+            #     # open_error(char_code_list[3])
+    print(all_err)
 
     pass
 
