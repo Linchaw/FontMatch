@@ -6,7 +6,7 @@ import split_chars
 import chars_match
 
 
-# 将字符图像排列生成A4页面
+# 将字符图像排列生成A4页面 row:28 * column:16
 def creat_pages():
     # 定义A4纸张大小，21cm * 29.7cm -> (21/2.54 * 300) * (29.7/2.54 * 300), 1英寸 = 2.54cm， 300dpi像素
     width, height = (2480, 3507)

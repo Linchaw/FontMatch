@@ -5,6 +5,7 @@ import numpy as np
 import os
 import chars_match
 
+
 # 将FontInfo.txt中char_code的所有变形字体的编码值返回
 def lookup_font_codes(char):
     font_list = np.loadtxt("FontInfo.txt", encoding='gbk', dtype=np.str_, delimiter='|')
