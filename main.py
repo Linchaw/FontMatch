@@ -20,16 +20,14 @@ def creat_pages():
     gap = 18
 
     # 字符图像路径
-    abs_dir = ['/Users/hlc/Documents/FontPageCode/AAConvFont_results/simfs_cond_bg_pix2pix/train_latest',
-               '/Users/hlc/Documents/FontPageCode/AAConvFont_results/simkai_cond_bg_pix2pix/train_latest',
-               '/Users/hlc/Documents/FontPageCode/AAConvFont_results/simyy_cond_bg_pix2pix/train_latest']
-    sub_dir = './fake'
-    or_dir = os.getcwd()
-    for num in range(len(abs_dir)):
-        os.chdir(abs_dir[num])
-        file_list = os.listdir(sub_dir)
-        img_paths = [os.path.join(sub_dir, x) for x in file_list]
-        img_paths.sort(key=lambda x: int(x.split('_')[1]))
+    origin_dir = ['./AAConvFont_results/simfs_cond_bg_pix2pix/train_latest/fake',
+                  './AAConvFont_results/simkai_cond_bg_pix2pix/train_latest/fake',
+                  './AAConvFont_results/simyy_cond_bg_pix2pix/train_latest/fake']
+
+    for num in range(len(origin_dir)):
+        file_list = os.listdir(origin_dir[num])
+        file_list.sort(key=lambda x: int(x.split('_')[1]))
+        img_paths = [os.path.join(origin_dir[num], x) for x in file_list]
 
         # 当前处理的字符，下标从0开始
         start = 0
@@ -39,38 +37,19 @@ def creat_pages():
         # 可能产生的页数，需要通过字符resize后的大小、页边距以及行列间距来计算一页能放几个字符，这里是至少8页，
         pages = 8
         for p in range(pages):
-            # 生成A4大小的空白页
-            page = Image.new('RGB', (width, height), 'white')
-            # 行数28，同理需要通过字符resize后的大小、页边距以及行列间距来计算
-
-            for i in range(28):
-                # 列数，即每一行的字数，同理需要通过字符resize后的大小、页边距以及行列间距来计算
-                for j in range(16):
-                    os.chdir(abs_dir[num])
-                    # 读取图片
-                    img = Image.open(img_paths[start])
-                    # resize
-                    resize_img = img.resize((img_size, img_size))
-                    # 将字符图像贴在空白页，box是字符图像左上角在空白页的起始位置px
-                    #
-                    page.paste(resize_img, box=(w_start + (img_size + gap) * j, h_start + (img_size + gap) * i))
-                    # 读取下一张字符图像
-                    start += 1
-                    # print(start)
-                    # pages.save("./result/page_{}.pdf".format())
-                    # 最后一页可能放不满，需要特殊处理
-                    if start > 3179:
-                        # pages.save("./result/page_7.pdf")
-                        os.chdir(or_dir)
-                        page.save("./result/pages/{}_7.png".format(num))
-                        flag = 1
-                        break
+            page = Image.new('RGB', (width, height), 'white')  # 创建A4纸张
+            for row in range(28):
                 if flag == 1:
                     break
-
-            os.chdir(or_dir)
-            # pages.save("./result/page_{}.pdf".format(p))
-            page.save("./result/pages/{}_{}.png".format(num, p))
+                for column in range(16):
+                    img = Image.open(img_paths[start])
+                    tmp = img.resize((img_size, img_size))
+                    page.paste(tmp, (w_start + column * (img_size + gap), h_start + row * (img_size + gap)))
+                    start += 1
+                    if start == len(file_list):
+                        flag = 1
+                        break
+            page.save('result/pages/' + str(num) + '_' + str(p) + '.png')
 
     print('create pages successfully!')
 
@@ -129,7 +108,6 @@ def split_pages(pages_path):
         cv2.imwrite("result/out/{}.png".format(idx), img_input)
 
         idx += 1
-
     pass
 
 
@@ -210,11 +188,11 @@ def check_error():
 
 # 主函数
 def main():
-    # creat_pages()
-    file_list = get_pages_path()
-    # split_pages(file_list)
-    # match_font(file_list)
-    check_error()
+    creat_pages()
+    # file_list = get_pages_path()
+    # # split_pages(file_list)
+    # # match_font(file_list)
+    # check_error()
     pass
 
 
