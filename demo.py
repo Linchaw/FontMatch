@@ -74,8 +74,51 @@ def test1():
 
 
 def test2():
-    print("黄昳雯平均句长：4.234")
-    print("黄林超平均句长：8.544")
+    # error_dir = './result/rate'
+    # for i in range(0, 24, 8):
+    #     file_name = os.path.join(error_dir, '{}-{}.json'.format(i, i + 7))
+    #     with open(file_name, 'r') as f:
+    #         error_dict = json.loads(f.read())
+    #     print(error_dict)
+    with open('./result/rate/0-7.json', 'r') as f:
+        error_dict = json.loads(f.read())
+    print(error_dict)
+
+    font_list = np.loadtxt("FontInfo.txt", encoding='gbk', dtype=np.str_, delimiter='|')
+
+    with open('CharsCodeFile.txt', 'r') as f:
+        code_dict = json.loads(f.read())
+    print(code_dict)
+
+    for key, value in error_dict.items():
+        print(key, value)
+        for line in font_list:
+            lst = line.split('-')
+            if lst[0] == key:
+                char_code_list = lst[2:]
+        if '00' in value:
+            open_error(char_code_list[0])
+        if '01' in value:
+            open_error(char_code_list[1])
+        if '10' in value:
+            open_error(char_code_list[2])
+        if '11' in value:
+            open_error(char_code_list[3])
+
+    pass
+
+
+def open_error(char_code):
+    dir = ['./AAConvFont_results/simfs_cond_bg_pix2pix/train_latest/fake']
+    with open('CharsCodeFile.txt', 'r') as f:
+        code_dict = json.loads(f.read())
+    tmp = code_dict[char_code]
+    filename = os.path.join(dir[0], tmp)
+    img = cv2.imread(filename)
+    cv2.imshow("cs", img)  # 在窗口cs中显示图片
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    pass
 
 
 def main():

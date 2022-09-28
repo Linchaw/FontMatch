@@ -136,7 +136,7 @@ def split_pages(pages_path):
 # 字体匹配
 def match_font(pages_path):
     idx = 0
-    for page_path in pages_path[0:1]:
+    for page_path in pages_path:
         img_input = cv2.imread(page_path, cv2.IMREAD_GRAYSCALE)
         _, img = cv2.threshold(img_input, 0, 255, cv2.THRESH_OTSU)  # 将一幅灰度图二值化 input-one channel
         _, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV)
@@ -169,11 +169,8 @@ def match_font(pages_path):
 
                 hz_bitmaps = chars_match.get_font_bitmap(hz_codes, para)  # 字符对应的四种标准字形
                 # 字符匹配算法，提取出水印信息01比特串
-                try:
-                    pixel_info, water_mark = chars_match.match_fonting(hz_img, hz_bitmaps)
-                    watermark_info.append(water_mark)
-                except Exception as E:
-                    print(hz, E)
+                pixel_info, water_mark = chars_match.match_fonting(hz_img, hz_bitmaps)
+                watermark_info.append(water_mark)
                 f.write(hz + '-' + str(x) + '-' + str(y) + '-' + str(w) + '-' + str(h) + '-' + water_mark + '\n')
 
         idx += 1
@@ -184,12 +181,10 @@ def match_font(pages_path):
 
 def check_error():
     extract_dir = './result/extract'
-    extract_files = os.listdir(extract_dir)
-    extract_files.sort(key=lambda x: int(x.split('.')[0]))
-    ALL_ERROR = {}
-    for pages_num in range(0, 24, 8):
-        for extract_file in extract_files[pages_num:8]:
-            file_name = os.path.join(extract_dir, extract_file)
+    for num_i in range(3):
+        ALL_ERROR = {}
+        for num_j in range(8):
+            file_name = os.path.join(extract_dir, '{}.txt'.format(str(num_i*8+num_j)))
             with open(file_name, 'r') as f:
                 extract_result = [line.strip('\n') for line in f.readlines()]
 
@@ -208,17 +203,16 @@ def check_error():
                         hz_check[extract_result[i][0]].pop('11')
                 if len(hz_check[extract_result[i][0]]) != 0:
                     ALL_ERROR.update(hz_check)
-
-        with open('result/rate/{}-{}.json'.format(pages_num, pages_num+7), 'w') as f:
+        print(ALL_ERROR)
+        with open('result/rate/{}-{}.json'.format(num_i*8, num_i*8+7), 'w') as f:
             f.write(json.dumps(ALL_ERROR))
-    print(ALL_ERROR)
 
 
 # 主函数
 def main():
     # creat_pages()
     file_list = get_pages_path()
-    # # split_pages(file_list)
+    # split_pages(file_list)
     # match_font(file_list)
     check_error()
     pass
