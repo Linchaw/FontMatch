@@ -53,7 +53,7 @@ def mk_charcodefile():
 
 def test1():
     with open('CharsCodeFile.txt', 'r') as f:
-        dict = json.loads(f.read())
+        code_dict = json.loads(f.read())
 
     font_list = np.loadtxt("FontInfo.txt", encoding='gbk', dtype=np.str_, delimiter='|')
 
@@ -62,7 +62,7 @@ def test1():
     if font[1] == '2':
         test1()
         exit()
-    tmp = dict[font[3]]
+    tmp = code_dict[font[3]]
     print(font)
     print(type(tmp))
     dir = ['./AAConvFont_results/simfs_cond_bg_pix2pix/train_latest/fake']
@@ -73,11 +73,17 @@ def test1():
     cv2.destroyAllWindows()
 
 
+def test2():
+    print("黄昳雯平均句长：4.234")
+    print("黄林超平均句长：8.544")
 
 
 def main():
     # mk_charcodefile()
-    test1()  # 测试生成文件是否对上
+    # test1()  # 测试生成文件是否对上
+    test2()
+    pass
+
 
 if __name__ == '__main__':
     main()

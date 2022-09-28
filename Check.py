@@ -26,13 +26,13 @@ for extract_file in extract_files:
                 per_rate[info[0]].pop('11')
             temp_num += 1
         rate.update(per_rate)
-    with open('./result/rate/{}.json'.format(extract_file), 'w+') as f:
-        json.dump(rate, f)
+    with open('./result/rate/all_error.json', 'w+') as f:
+        f.write(json.dumps(rate))
 
 ALL_ERROR = 0
-for i in range(24):
-    with open('./result/rate/{}.txt.json'.format(str(i)), 'r') as f:
-        rate = json.loads(f.read())
-        for key in rate.keys():
-            ALL_ERROR += len(rate[key])
+# for i in range(24):
+#     with open('./result/rate/{}.txt.json'.format(str(i)), 'r') as f:
+#         rate = json.loads(f.read())
+#         for key in rate.keys():
+#             ALL_ERROR += len(rate[key])
 print(ALL_ERROR)

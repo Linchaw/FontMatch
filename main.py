@@ -136,7 +136,7 @@ def split_pages(pages_path):
 # 字体匹配
 def match_font(pages_path):
     idx = 0
-    for page_path in pages_path:
+    for page_path in pages_path[0:1]:
         img_input = cv2.imread(page_path, cv2.IMREAD_GRAYSCALE)
         _, img = cv2.threshold(img_input, 0, 255, cv2.THRESH_OTSU)  # 将一幅灰度图二值化 input-one channel
         _, img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV)
@@ -182,12 +182,45 @@ def match_font(pages_path):
         print("文本中提取的所有bit信息为：%s" % watermark_str)
 
 
+def check_error():
+    extract_dir = './result/extract'
+    extract_files = os.listdir(extract_dir)
+    extract_files.sort(key=lambda x: int(x.split('.')[0]))
+    ALL_ERROR = {}
+    for pages_num in range(0, 24, 8):
+        for extract_file in extract_files[pages_num:8]:
+            file_name = os.path.join(extract_dir, extract_file)
+            with open(file_name, 'r') as f:
+                extract_result = [line.strip('\n') for line in f.readlines()]
+
+            # 对每个字符进行检查
+            for i in range(0, len(extract_result), 4):
+                hz_check = {extract_result[i][0]: {'00': False, '01': False, '10': False, '11': False}}
+                for j in range(4):
+                    water_mark = extract_result[i + j].split('-')[-1]
+                    if water_mark == '00' and j == 0:
+                        hz_check[extract_result[i][0]].pop('00')
+                    elif water_mark == '01' and j == 1:
+                        hz_check[extract_result[i][0]].pop('01')
+                    elif water_mark == '10' and j == 2:
+                        hz_check[extract_result[i][0]].pop('10')
+                    elif water_mark == '11' and j == 3:
+                        hz_check[extract_result[i][0]].pop('11')
+                if len(hz_check[extract_result[i][0]]) != 0:
+                    ALL_ERROR.update(hz_check)
+
+        with open('result/rate/{}-{}.json'.format(pages_num, pages_num+7), 'w') as f:
+            f.write(json.dumps(ALL_ERROR))
+    print(ALL_ERROR)
+
+
 # 主函数
 def main():
     # creat_pages()
     file_list = get_pages_path()
-    # split_pages(file_list)
-    match_font(file_list)
+    # # split_pages(file_list)
+    # match_font(file_list)
+    check_error()
     pass
 
 
