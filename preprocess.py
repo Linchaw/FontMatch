@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import math
 
-global img, point1, point2, point_all, imgcache
+global img, point1, point2, point_all, img_cache
 
 
 # 二值化
@@ -48,7 +48,7 @@ def grayscale(rgbimg):
 
 # 裁剪
 def on_mouse(event, x, y, flags, param):
-    global img, point1, point2, imgcache
+    global img, point1, point2, img_cache
     img2 = img.copy()
 
     if event == cv2.EVENT_LBUTTONDOWN:  # 左键点击
@@ -75,7 +75,7 @@ def on_mouse(event, x, y, flags, param):
 
 # 矫正
 def mouse_hande(event, x, y, flags, param):
-    global img, point_all, imgcache
+    global img, point_all, img_cache
     img3 = img.copy()
     h, w = img3.shape[0:2]
     # cv2.imshow('image', img3)
@@ -134,7 +134,7 @@ def mouse_hande(event, x, y, flags, param):
 
 
 def cashi(event, x, y, flags, param):
-    global img, radius, imgcache
+    global img, radius, img_cache
     img9 = img.copy()
     cv2.imshow('image', img9)
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -274,83 +274,83 @@ def main():
     print('输入如果是扫描的图片，依次经过以下处理可以获得满意效果：0二值化，8膨胀，2锐化，7腐蚀，[可选：1中值滤波]')
     print('需要透视校正的图片，依次经过以下处理可以获得满意效果：4校正，2锐化，0二值化')
     while 1:
-        keyvalue = cv2.waitKey(0) & 0xFF
-        if keyvalue == ord('0'):
+        key_value = cv2.waitKey(0) & 0xFF
+        if key_value == ord('0'):
             print("进行自适应二值化")
             _ret, img = cv2.threshold(img, 0, 255, cv2.THRESH_OTSU, 0)
             cv2.imshow('image', img)
 
-        if keyvalue == ord('1'):
+        if key_value == ord('1'):
             print('进行中值滤波：输入3、5或7')
             kenelsize = int(input())
             img = cv2.medianBlur(img, kenelsize)
             cv2.imshow('image', img)
 
-        if keyvalue == ord('2'):
+        if key_value == ord('2'):
             print('进行锐化')
             img = custom_blur_demo()
             cv2.imshow('image', img)
 
-        if keyvalue == ord('3'):
+        if key_value == ord('3'):
             print('进行裁剪')
             cv2.setMouseCallback('image', on_mouse)
             # cv2.imshow('image', img)
 
-        if keyvalue == ord('4'):
+        if key_value == ord('4'):
             point_all = []
             print('进行矫正')
             cv2.setMouseCallback('image', mouse_hande)
             # cv2.imshow('image', img)
 
-        if keyvalue == ord('5'):
+        if key_value == ord('5'):
             print('加粗，代码还未实现')
             img = makefat()
             cv2.imshow("image", img)
 
-        if keyvalue == ord('6'):
+        if key_value == ord('6'):
             print('变细，代码还未实现')
             img = makethin()
             cv2.imshow("image", img)
 
-        if keyvalue == ord('7'):
+        if key_value == ord('7'):
             print('腐蚀')
             img = dilate_demo()
             cv2.imshow("image", img)
 
-        if keyvalue == ord('8'):
+        if key_value == ord('8'):
             print('膨胀')
             img = erode_demo()
             cv2.imshow("image", img)
 
-        if keyvalue == ord('9'):
+        if key_value == ord('9'):
             global radius
             print('擦拭')
             radius = int(input('输入橡皮擦半径:'))
             cv2.setMouseCallback('image', cashi)
             # cv2.imshow('image', img)
 
-        if keyvalue == ord('r'):
+        if key_value == ord('r'):
             point_two = []
             print('旋转校正，画出参考直线')
             cv2.setMouseCallback('image', rotate)
             # cv2.imshow('image', img)
 
-        if keyvalue == ord('L'):
+        if key_value == ord('L'):
             print('进行gamma校正：输入gamma值（暗部提亮gamma值在0~1，亮部加黑gamma值>1）')
             gamma = float(input())
             img = Light_treatment(gamma)
             cv2.imshow('image', img)
 
-        if keyvalue == ord('w'):
+        if key_value == ord('w'):
             print('进行OTSU分块二值化')
             img = OSTU_threshold()
             cv2.imshow('image', img)
 
-        if keyvalue == ord('s'):
+        if key_value == ord('s'):
             print('保存图片')
             cv2.imwrite('./pre_img.png', img)
 
-        if keyvalue == ord('o'):
+        if key_value == ord('o'):
             print('重新读入图片')
             path = input('输入图像路径:')
             img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
@@ -359,7 +359,7 @@ def main():
             img = cv2.resize(img5, (5000, h * 5000 // w), interpolation=cv2.INTER_LANCZOS4)
             cv2.imshow('image', img)
 
-        if keyvalue == ord('q'):
+        if key_value == ord('q'):
             print('退出')
             break
 
